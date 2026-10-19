@@ -1,39 +1,202 @@
-# NoteGenie - AI Study Notes & Quiz Generator
+\# NoteGenie
 
-NoteGenie is an intelligent study assistant that transforms raw notes or documents into structured learning materials. It uses Large Language Models (LLMs) and a Retrieval-Augmented Generation (RAG) pipeline to generate summaries, key points, quizzes, and answer specific questions based on the provided context.
 
-## 🚀 Live Demo
-* **Live App:** [https://notegenie-yourname.vercel.app](https://notegenie-yourname.vercel.app) *(Replace with your actual link)*
 
-## ✨ Features
-* **Smart Summarization:** Paste text or upload notes to get concise summaries and key points.
-* **Auto-Generated Quizzes:** Generates 5-question multiple-choice quizzes to test your knowledge.
-* **Context-Aware Q&A (RAG):** Ask questions directly about your notes. The app uses vector similarity search to find relevant chunks and grounds the LLM's answer in your actual text.
-* **User Dashboard:** Save, organize, and revisit your generated study materials.
-* **Streaming Responses:** LLM responses are streamed to the UI for a fast, interactive experience.
+NoteGenie turns study material into summaries, key points, and quizzes. You can paste text or upload a text-based PDF, then ask questions about saved notes using retrieval-augmented generation (RAG).
 
-## 🛠️ Tech Stack
-* **Frontend:** Next.js, React, TypeScript, Tailwind CSS
-* **Backend:** Node.js, Express.js / Next.js API Routes
-* **AI & LLM:** OpenAI API (GPT-4o-mini) / Google Gemini API
-* **Embeddings & Vector DB:** OpenAI `text-embedding-3-small`, Pinecone / Supabase `pgvector`
-* **Database:** PostgreSQL (for user data and note metadata)
 
-## 🧠 How the RAG Pipeline Works
-1. **Chunking:** User text is split into smaller, overlapping chunks.
-2. **Embedding:** Each chunk is converted into a vector embedding using the LLM API.
-3. **Storage:** Vectors are stored in the Vector Database.
-4. **Retrieval:** When a user asks a question, the question is embedded, and a similarity search retrieves the top relevant chunks.
-5. **Generation:** The retrieved chunks and the user's question are sent to the LLM to generate a context-grounded answer.
 
-## ⚙️ Local Setup
-1. Clone the repository
-   `git clone https://github.com/Karan-1108/NoteGenie.git`
-2. Install dependencies
-   `npm install`
-3. Set up `.env` file with your `OPENAI_API_KEY` (or `GEMINI_API_KEY`), `DATABASE_URL`, and `PINECONE_API_KEY`.
-4. Start the development server
-   `npm run dev`
+\## Features
 
-## 📸 Screenshots
-*(Add 1-2 screenshots of the quiz generation and the chat interface here)*
+
+
+\- Generate a summary, key points, and a five-question multiple-choice quiz.
+
+\- Upload a PDF up to 10 MB and extract its selectable text.
+
+\- Save notes and their text chunks in Supabase Postgres.
+
+\- Create Gemini embeddings and store them with the `pgvector` extension.
+
+\- Ask questions grounded in the saved study material.
+
+
+
+Scanned PDFs require OCR before upload. User accounts and per-user note privacy have not been implemented yet.
+
+
+
+\## Tech stack
+
+
+
+\- Frontend: Next.js, React, TypeScript, Tailwind CSS
+
+\- API: Express, TypeScript, Multer, `pdf-parse`
+
+\- AI: Google Gemini for note generation, embeddings, and answers
+
+\- Database: Supabase Postgres with `pgvector`
+
+
+
+\## Project structure
+
+
+
+```text
+
+apps/
+
+&#x20; api/    Express API
+
+&#x20; web/    Next.js frontend
+
+```
+
+
+
+\## Requirements
+
+
+
+\- Node.js and npm
+
+\- A Supabase project with the `vector` extension and the `notes` and `note\_chunks` tables
+
+\- A Google Gemini API key
+
+
+
+\## Run locally
+
+
+
+\### 1. Configure the API
+
+
+
+In PowerShell:
+
+
+
+```powershell
+
+cd C:\\Users\\KARAN\\NoteGenie\\apps\\api
+
+Copy-Item .env.example .env
+
+```
+
+
+
+Put your own values in `apps/api/.env`:
+
+
+
+```env
+
+GEMINI\_API\_KEY=your\_gemini\_api\_key
+
+GEMINI\_MODEL=gemini-3.5-flash-lite
+
+PORT=4000
+
+WEB\_ORIGIN=http://localhost:3000
+
+DATABASE\_URL=your\_supabase\_postgres\_connection\_string
+
+```
+
+
+
+Never commit `.env` or share its contents. Use your Supabase session-pooler connection string for `DATABASE\_URL`, including the required SSL options.
+
+
+
+\### 2. Start the API
+
+
+
+```powershell
+
+cd C:\\Users\\KARAN\\NoteGenie\\apps\\api
+
+npm install
+
+npm run dev
+
+```
+
+
+
+The API runs at `http://localhost:4000`.
+
+
+
+\### 3. Start the website
+
+
+
+Open a second PowerShell window:
+
+
+
+```powershell
+
+cd C:\\Users\\KARAN\\NoteGenie\\apps\\web
+
+npm install
+
+npm run dev
+
+```
+
+
+
+Open `http://localhost:3000`.
+
+
+
+\## API endpoints
+
+
+
+\- `GET /health` — API status
+
+\- `GET /health/db` — database connection status
+
+\- `POST /api/generate` — generate and save notes from text
+
+\- `POST /api/upload-pdf` — extract PDF text, then generate and save notes
+
+\- `GET /api/notes` — list saved notes
+
+\- `POST /api/ask` — ask a question about saved notes
+
+
+
+\## Database
+
+
+
+The API expects these tables in the Supabase `public` schema:
+
+
+
+\- `notes`: generated title, source text, summary, key points, quiz, and creation time
+
+\- `note\_chunks`: text chunks and their vector embeddings, linked to `notes`
+
+
+
+Enable the `vector` extension in Supabase before creating the `note\_chunks` table. Keep database credentials on the API server; do not put them in frontend environment variables.
+
+
+
+\## Deployment status
+
+
+
+This project is currently configured for local development. Deployment, authentication, and per-user access controls are future work.
+
